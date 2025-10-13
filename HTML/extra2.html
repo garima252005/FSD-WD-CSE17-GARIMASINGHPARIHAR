@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" type="image/books-icon" href="C:\Users\ACER\OneDrive\Desktop\FSD-WD\FSD-WD-CSE17-GARIMASINGHPARIHAR\HTML\books.ico">
+    <link rel="icon" type="image/FEV-icon" href="C:\Users\ACER\OneDrive\Desktop\FSD-WD\FSD-WD-CSE17-GARIMASINGHPARIHAR\HTML\FEV.ico">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
@@ -17,7 +17,7 @@
         }
         .cart-header {
             display: flex;
-            border-bottom: 1px solid black;
+            border-bottom: 0px solid black;
             margin-bottom: 20px;
         }
         .cart-item {
@@ -47,28 +47,22 @@
             text-align: center;
             margin: 0 5px;
         }
-        .remove-btn {
-            background-color: greenyellow;
-            color: black;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-        }
+        
         .cart-summary {
-            border-top: 1px solid black;
+            border-top: 0px solid black;
             padding-top: 20px;
             margin-top: 20px;
-            text-align: left;
+            text-align: right;
         }
     </style>
 </head>
 <body>
     <table border="2" style="border-collapse: collapse; border: 1px solid rgb(0, 0, 0)" width="95%" height="100%">
-        <tr style="background-color:rgb(180, 122, 168)">
+        <tr style="background-color:rgb(228, 170, 69)">
             <th style="padding:5px"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhS5MqwzLGxFfGfk0_KTi7uNJJ3L280oGmGA&s" width="30" height="40"></th>
             <th colspan="4">ABES ENGINEERING college</th>
         </tr>
-        <tr style="background-color:rgba(189, 154, 192, 0.378)">
+        <tr style="background-color: rgba(204, 164, 83, 0.378)">
             <th>Home</th>
             <th>Login</th>
             <th>Registration</th>
@@ -93,18 +87,27 @@
     <div class="cart-item">
         
         <div class="item-details">
-            <p>Book:XMLBible<br>Author : Winston<br>Publication:Wiely</p>
+            <p>Book: Programming in C & C++ <br>Author : Pooja Srivastava<br>Publication:Khanna</p>
         </div>
-        <div class="item-price">$40.5</div>
+        <div class="item-price">$55.5</div>
         <div class="item-quantity">
+            <button>-</button>
             <input type="number" value="1" min="1">
-        </div>
-        <div class="item-remove">
-            <button class="remove-btn">Remove</button>
+            <button>+</button>
         </div>
     </div>
-
-    
+    <div class="cart-item">
+        
+        <div class="item-details">
+            <p>Book: The Code Breaker<br>Author :  Walter Isaacson<br>Publication:</p>
+        </div>
+        <div class="item-price">$34</div>
+        <div class="item-quantity">
+            <button>-</button>
+            <input type="number" value="1" min="1">
+            <button>+</button>
+        </div>
+    </div>
     <div class="cart-item"> 
         
         <div class="item-details">
@@ -112,15 +115,14 @@
         </div>
         <div class="item-price">$60</div>
         <div class="item-quantity">
+            <button>-</button>
             <input type="number" value="2" min="1"> 
-        </div>
-        <div class="item-remove">
-            <button class="remove-btn">Remove</button>
+            <button>+</button>
         </div>
     </div>
 
     <div class="cart-summary">
-        <h4>Total amount: $103.5</h4>
+        <h4>Total amount: $209.5</h4>
     </div>
 </div>
 </td>
