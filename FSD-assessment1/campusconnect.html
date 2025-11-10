@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Campus Connect — QR Grievance & Feedback Portal (Frontend Demo)</title>
+  <style>
+    :root{--bg:#f6f8fb;--card:#fff;--accent:#0f62fe;--muted:#6b7280}
+    body{font-family:Inter,system-ui,Segoe UI,Roboto,'Helvetica Neue',Arial;margin:0;background:var(--bg);color:#111}
+    .container{max-width:1000px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;gap:18px}
+    header h1{margin:0;font-size:20px}
+
+    .grid{display:grid;grid-template-columns:320px 1fr;gap:18px;margin-top:18px}
+    .card{background:var(--card);padding:16px;border-radius:12px;box-shadow:0 6px 18px rgba(15,22,39,0.06)}
+    .qr-wrap{text-align:center}
+    .objectives p{margin:6px 0;color:var(--muted)}
+    label{display:block;margin-top:10px;font-size:13px;color:var(--muted)}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef;margin-top:6px;font-size:14px}
+    button{background:var(--accent);color:#fff;border:none;padding:10px 12px;border-radius:10px;cursor:pointer;margin-top:10px}
+    .small{font-size:13px;color:var(--muted)}
+    .status-list{list-style:none;padding:0;margin:0}
+    .status-item{padding:8px;border-radius:8px;border:1px dashed #e6e9ef;margin-top:8px;background:#fcfdff}
+    .topbar{display:flex;justify-content:space-between;align-items:center}
+    .role{font-size:13px}
+    .notice{background:#fff9e6;padding:10px;border-radius:8px;margin-top:10px;border:1px solid #ffecb3}
+    .meta{font-size:12px;color:var(--muted)}
+    .chip{display:inline-block;padding:6px 8px;border-radius:999px;border:1px solid #eef2ff;background:#f6f9ff;margin-right:6px}
+    footer{margin-top:18px;font-size:13px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='44' height='44'><rect rx='8' width='44' height='44' fill='%230f62fe'/><text x='50%' y='55%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='20' fill='white'>CC</text></svg>" alt="logo" style="width:44px;height:44px;border-radius:8px;">
+      <div>
+        <h1>Campus Connect — QR Grievance & Feedback Portal</h1>
+        <div class="meta">Scan the QR in classrooms/hostels or click the QR image to open this portal.</div>
+      </div>
+      <div style="margin-left:auto;text-align:right">
+        <div class="role" id="currentRole">Role: <strong>Guest</strong></div>
+        <div class="small">Tip: use the quick-login buttons below to test role-based flows.</div>
+      </div>
+    </header>
+
+    <div class="grid">
+      <aside class="card">
+        <div class="qr-wrap">
+          <h3 style="margin-top:6px">QR linking to this page</h3>
+          <!-- QR image built using Google Chart API for demo (replace with your hosted URL when deploying) -->
+          <img id="qrImage" alt="QR code" style="width:180px;height:180px;border-radius:8px;border:1px solid #eef2ff" />
+          <div class="small" style="margin-top:8px">Click or scan to open the portal URL</div>
+        </div>
+
+        <div style="margin-top:14px">
+          <h4>Objectives</h4>
+          <div class="objectives small">
+            <p>• Enable instant grievance/feedback submission via unique QR codes placed across campus.</p>
+            <p>• Auto-route grievances to concerned department/faculty based on category.</p>
+            <p>• AI-assisted sentiment analyzer (positive / neutral / negative) to prioritize responses.</p>
+            <p>• Maintain confidentiality using secure role-based authentication.</p>
+            <p>• Track every complaint from submission to resolution with timestamped logs and notifications.</p>
+          </div>
+        </div>
+
+        <div style="margin-top:12px">
+          <h4>Quick login (demo)</h4>
+          <button onclick="loginAs('student')">Login as Student</button>
+          <button onclick="loginAs('department')" style="margin-left:6px">Login as Dept</button>
+          <button onclick="loginAs('admin')" style="margin-left:6px">Login as Admin</button>
+          <button onclick="logout()" style="margin-left:6px;background:#e6edf9;color:#0f62fe">Logout</button>
+        </div>
+
+        <div class="notice">
+          <strong>Confidentiality:</strong> Submissions are stored locally in this demo (use TLS & server-side DB in production). Role-based access controls control visibility of complaints.
+        </div>
+      </aside>
+
+      <main>
+        <div class="card">
+          <div class="topbar">
+            <h3 style="margin:0">Submit Feedback / Grievance</h3>
+            <div class="chip">Auto-route enabled</div>
+            <div class="chip" id="sentimentChip">Sentiment: —</div>
+          </div>
+
+          <form id="complaintForm" onsubmit="return submitForm(event)">
+            <label>Name (optional)</label>
+            <input id="name" placeholder="Leave blank for anonymous" />
+
+            <label>Student ID (optional)</label>
+            <input id="sid" placeholder="e.g. S2025XXXX" />
+
+            <label>Category</label>
+            <select id="category" required>
+              <option value="academics">Academics</option>
+              <option value="hostel">Hostel / Accommodation</option>
+              <option value="facilities">Facilities (Labs/Library/Canteen)</option>
+              <option value="faculty">Faculty / Teaching</option>
+              <option value="administration">Administration / Fees</option>
+              <option value="safety">Safety / Security</option>
+              <option value="other">Other</option>
+            </select>
+
+            <label>Type</label>
+            <select id="type">
+              <option value="complaint">Complaint</option>
+              <option value="feedback">Feedback</option>
+              <option value="suggestion">Suggestion</option>
+            </select>
+
+            <label>Message</label>
+            <textarea id="message" rows="5" placeholder="Describe the issue or feedback" required></textarea>
+
+            <div style="display:flex;gap:10px;align-items:center;margin-top:10px">
+              <button type="submit">Submit</button>
+              <button type="button" onclick="quickNegative()" style="background:#ff6b6b">Simulate Negative</button>
+              <div class="small" style="margin-left:auto">Submissions: <span id="count">0</span></div>
+            </div>
+          </form>
+
+          <div style="margin-top:12px">
+            <h4>Auto-routing preview</h4>
+            <div class="small" id="routePreview">—</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h3 style="margin:0">Track & Manage Submissions</h3>
+          <div class="small">Below are submissions visible to your current role.</div>
+          <ul id="submissions" class="status-list" style="margin-top:10px"></ul>
+        </div>
+
+      </main>
+    </div>
+
+    <footer class="small">This is a frontend-only demo. Replace localStorage usage and QR generator with server endpoints and unique QR images mapped to department/classroom IDs when deploying.</footer>
+  </div>
+
+  <script>
+    // --- Utilities & demo configuration ---
+    const departmentMap = {
+      academics: 'Head of Academics (academics@campus.edu)',
+      hostel: 'Warden / Hostel Office (hostel@campus.edu)',
+      facilities: 'Facilities Manager (facilities@campus.edu)',
+      faculty: 'HOD / Concerned Faculty (faculty@campus.edu)',
+      administration: 'Admin Office (admin@campus.edu)',
+      safety: 'Security Office (security@campus.edu)',
+      other: 'Student Affairs (students@campus.edu)'
+    };
+
+    // build QR pointing to this page (for demo we use Google Charts API)
+    function buildQR(){
+      try{
+        const url = encodeURIComponent(window.location.href);
+        const src = `https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=${url}`;
+        document.getElementById('qrImage').src = src;
+        document.getElementById('qrImage').onclick = ()=>{ window.open(window.location.href,'_blank'); }
+      }catch(e){console.error(e)}
+    }
+    buildQR();
+
+    // simple sentiment analyzer (demo): word-count based
+    const posWords = ['good','great','excellent','happy','satisfied','love','thanks','thank'];
+    const negWords = ['bad','poor','terrible','unhappy','angry','hate','delay','issue','problem','complain'];
+    function analyzeSentiment(text){
+      const t = text.toLowerCase();
+      let score = 0;
+      posWords.forEach(w=>{ if(t.includes(w)) score+=1});
+      negWords.forEach(w=>{ if(t.includes(w)) score-=1});
+      if(score>0) return 'positive';
+      if(score<0) return 'negative';
+      return 'neutral';
+    }
+
+    // role-based demo
+    let currentRole = 'guest';
+    function loginAs(role){ currentRole = role; document.getElementById('currentRole').innerHTML = 'Role: <strong>'+role.charAt(0).toUpperCase()+role.slice(1)+'</strong>'; renderSubmissions(); }
+    function logout(){ currentRole='guest'; document.getElementById('currentRole').innerHTML = 'Role: <strong>Guest</strong>'; renderSubmissions(); }
+
+    // localStorage-backed submissions store (demo)
+    function loadStore(){ return JSON.parse(localStorage.getItem('cc_store_v1')||'[]'); }
+    function saveStore(arr){ localStorage.setItem('cc_store_v1',JSON.stringify(arr)); }
+
+    function submitForm(e){
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const sid = document.getElementById('sid').value.trim();
+      const category = document.getElementById('category').value;
+      const type = document.getElementById('type').value;
+      const message = document.getElementById('message').value.trim();
+      if(!message) return alert('Please enter a message.');
+
+      const sentiment = analyzeSentiment(message);
+      document.getElementById('sentimentChip').innerText = 'Sentiment: '+sentiment;
+
+      // auto-route
+      const routedTo = departmentMap[category] || departmentMap.other;
+      document.getElementById('routePreview').innerText = routedTo;
+
+      const store = loadStore();
+      const id = 'CC-'+Date.now();
+      const item = {id, name: name||'Anonymous', sid: sid||null, category, type, message, sentiment, routedTo, status:'submitted', timeline:[{status:'submitted', ts:new Date().toISOString()}]};
+      store.push(item); saveStore(store);
+
+      document.getElementById('count').innerText = store.length;
+      document.getElementById('complaintForm').reset();
+      renderSubmissions();
+      alert('Submitted — ID: '+id+'\nRouted to: '+routedTo+'\nSentiment: '+sentiment);
+    }
+
+    // quick negative fill
+    function quickNegative(){ document.getElementById('message').value = 'There is a serious delay and safety issue. I am unhappy with the poor response.'; }
+
+    function renderSubmissions(){
+      const list = document.getElementById('submissions'); list.innerHTML='';
+      const store = loadStore();
+      document.getElementById('count').innerText = store.length;
+
+      // role rules (demo): student sees their own/same SID or anonymous -> in demo show all to student; department sees routed items matching their dept; admin sees all
+      const filtered = store.filter(item => {
+        if(currentRole==='admin') return true;
+        if(currentRole==='department'){
+          // show items routed to any department (for demo, show all but admin-only actions hidden)
+          return true;
+        }
+        if(currentRole==='student'){
+          // show all (demo). In real system, filter by SID or ownership
+          return true;
+        }
+        // guest sees none
+        return false;
+      });
+
+      if(filtered.length===0){ list.innerHTML = '<div class="small">No submissions visible to your role. Try logging in as Student / Dept / Admin (demo)</div>'; return; }
+
+      filtered.reverse().forEach(item=>{
+        const li = document.createElement('li'); li.className='status-item';
+        const ts = new Date(item.timeline[0].ts).toLocaleString();
+        li.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:start"><div><strong>${item.type.toUpperCase()} • ${item.category}</strong><div class="small">ID: ${item.id} • ${item.name}${item.sid?(' • '+item.sid):''}</div></div><div class="small">${ts}</div></div>
+          <p style="margin:8px 0">${item.message}</p>
+          <div class="small">Routed to: <em>${item.routedTo}</em> • Sentiment: <strong>${item.sentiment}</strong></div>
+          <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+            <div class="small">Status: <strong>${item.status}</strong></div>
+            ${ currentRole!=='guest' ? '<button onclick="advanceStatus(\''+item.id+'\')">Advance</button>' : '' }
+            ${ currentRole==='admin' ? '<button onclick="deleteItem(\''+item.id+'\')" style="background:#ff6b6b">Delete</button>' : '' }
+          </div>`;
+        list.appendChild(li);
+      });
+    }
+
+    function advanceStatus(id){
+      const store = loadStore();
+      const idx = store.findIndex(s=>s.id===id); if(idx===-1)return;
+      const order = ['submitted','acknowledged','in-progress','resolved'];
+      const cur = store[idx].status; const next = order[Math.min(order.indexOf(cur)+1, order.length-1)];
+      store[idx].status = next; store[idx].timeline.push({status:next, ts:new Date().toISOString()}); saveStore(store);
+      renderSubmissions();
+      alert('Status updated to '+next+' for '+id);
+    }
+
+    function deleteItem(id){ if(!confirm('Delete item '+id+'?'))return; const store=loadStore(); const out = store.filter(s=>s.id!==id); saveStore(out); renderSubmissions(); }
+
+    // initial render
+    renderSubmissions();
+  </script>
+</body>
+</html>
