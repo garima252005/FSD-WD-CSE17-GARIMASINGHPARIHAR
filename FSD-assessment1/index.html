@@ -41,15 +41,13 @@
 <body>
   <div class="qr-card">
     <h1>Campus Connect</h1>
-    <p>Scan this QR code or click below to open the<br><strong>Student Feedback & Grievance Portal</strong></p>
-    <img id="qrImage" src="" alt="QR Code to Portal">
+    <p>Click below to open the<br><strong>Student Feedback & Grievance Portal</strong></p>
+    <a href="QR1.html">Click here to open the QR</a>
     <p><a href="portal.html" id="portalLink">👉 Open Feedback Portal</a></p>
   </div>
 
   <script>
     const portalUrl = window.location.origin + window.location.pathname.replace("index.html", "") + "portal.html";
-    const qrSrc = "https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=" + encodeURIComponent(portalUrl);
-    document.getElementById("qrImage").src = qrSrc;
     document.getElementById("portalLink").href = portalUrl;
   </script>
 </body>
